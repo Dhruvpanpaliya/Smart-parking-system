@@ -1,0 +1,144 @@
+<div class="fade-in-up">
+  <div class="page-header">
+    <h2><i class="bi bi-layout-three-columns me-2" style="color:var(--primary)"></i>Slots & Locations</h2>
+  </div>
+
+  <div *ngIf="successMsg" class="alert-glass alert-success mb-3"><i class="bi bi-check-circle"></i> {{ successMsg }}</div>
+  <div *ngIf="errorMsg" class="alert-glass alert-danger mb-3"><i class="bi bi-exclamation-circle"></i> {{ errorMsg }}</div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs-custom mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='locations'" (click)="activeTab='locations'" style="cursor:pointer;">
+        <i class="bi bi-geo-alt me-1"></i> Locations
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='slots'" (click)="activeTab='slots'" style="cursor:pointer;">
+        <i class="bi bi-columns-gap me-1"></i> Slots
+      </a>
+    </li>
+  </ul>
+
+  <!-- ===== Locations Tab ===== -->
+  <div *ngIf="activeTab==='locations'">
+    <!-- Add/Edit Location Form -->
+    <div class="glass-card mb-4">
+      <h5 class="mb-3">{{ editingLocId ? 'Edit Location' : 'Add New Location' }}</h5>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" [(ngModel)]="locForm.name" placeholder="Location name">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Address</label>
+          <input type="text" class="form-control" [(ngModel)]="locForm.address" placeholder="Full address">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Total Slots</label>
+          <input type="number" class="form-control" [(ngModel)]="locForm.totalSlots" min="1">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" [(ngModel)]="locForm.active" id="locActive">
+            <label class="form-check-label form-label" for="locActive">Active</label>
+          </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end gap-2">
+          <button class="btn btn-gradient" (click)="saveLocation()">{{ editingLocId ? 'Update' : 'Add' }}</button>
+          <button *ngIf="editingLocId" class="btn btn-glass" (click)="resetLocForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Locations Table -->
+    <div class="glass-card">
+      <div class="table-responsive">
+        <table class="table-dark-custom">
+          <thead><tr><th>ID</th><th>Name</th><th>Address</th><th>Total Slots</th><th>Active</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let loc of locations">
+              <td>#{{ loc.id }}</td>
+              <td>{{ loc.name }}</td>
+              <td>{{ loc.address }}</td>
+              <td>{{ loc.totalSlots }}</td>
+              <td><span [class]="loc.active ? 'badge-status badge-available' : 'badge-status badge-towed'">{{ loc.active ? 'Active' : 'Inactive' }}</span></td>
+              <td>
+                <button class="btn btn-glass btn-sm me-2" (click)="editLocation(loc)" style="padding:4px 12px;"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-danger-gradient btn-sm" (click)="deleteLocation(loc.id)"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Slots Tab ===== -->
+  <div *ngIf="activeTab==='slots'">
+    <!-- Add/Edit Slot Form -->
+    <div class="glass-card mb-4">
+      <h5 class="mb-3">{{ editingSlotId ? 'Edit Slot' : 'Add New Slot' }}</h5>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label">Slot Number</label>
+          <input type="text" class="form-control" [(ngModel)]="slotForm.slotNumber" placeholder="e.g. A-01">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Vehicle Type</label>
+          <select class="form-select" [(ngModel)]="slotForm.vehicleType">
+            <option value="CAR">CAR</option>
+            <option value="BIKE">BIKE</option>
+            <option value="TRUCK">TRUCK</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Location</label>
+          <select class="form-select" [(ngModel)]="slotForm.locationId">
+            <option [ngValue]="null">-- Select --</option>
+            <option *ngFor="let loc of locations" [ngValue]="loc.id">{{ loc.name }}</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button class="btn btn-gradient" (click)="saveSlot()">{{ editingSlotId ? 'Update' : 'Add' }}</button>
+          <button *ngIf="editingSlotId" class="btn btn-glass" (click)="resetSlotForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="glass-card mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <label class="form-label">Filter by Location</label>
+          <select class="form-select" [(ngModel)]="filterLocationId">
+            <option [ngValue]="null">All Locations</option>
+            <option *ngFor="let loc of locations" [ngValue]="loc.id">{{ loc.name }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slots Table -->
+    <div class="glass-card">
+      <div class="table-responsive">
+        <table class="table-dark-custom">
+          <thead><tr><th>ID</th><th>Slot#</th><th>Type</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let slot of getFilteredSlots()">
+              <td>#{{ slot.id }}</td>
+              <td>{{ slot.slotNumber }}</td>
+              <td>{{ slot.vehicleType }}</td>
+              <td>{{ slot.parkingLocation?.name }}</td>
+              <td><span [class]="getStatusBadge(slot.status)">{{ slot.status }}</span></td>
+              <td>
+                <button class="btn btn-glass btn-sm me-2" (click)="editSlot(slot)" style="padding:4px 12px;"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-danger-gradient btn-sm" (click)="deleteSlot(slot.id)"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

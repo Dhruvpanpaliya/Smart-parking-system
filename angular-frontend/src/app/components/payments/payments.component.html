@@ -1,0 +1,85 @@
+<div class="fade-in-up">
+  <div class="page-header">
+    <h2><i class="bi bi-credit-card-2-front-fill me-2" style="color:var(--primary)"></i>Payments</h2>
+  </div>
+
+  <div *ngIf="successMsg" class="alert-glass alert-success mb-3"><i class="bi bi-check-circle"></i> {{ successMsg }}</div>
+  <div *ngIf="errorMsg" class="alert-glass alert-danger mb-3"><i class="bi bi-exclamation-circle"></i> {{ errorMsg }}</div>
+  <div *ngIf="loading" class="spinner-container"><div class="custom-spinner"></div></div>
+
+  <!-- Revenue Card (Admin) -->
+  <div *ngIf="!loading && authService.isAdmin()" class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card success">
+        <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+        <div class="stat-value">₹{{ totalRevenue }}</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card primary">
+        <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+        <div class="stat-value">{{ allPayments.length }}</div>
+        <div class="stat-label">Total Payments</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Payments (User) -->
+  <div *ngIf="!loading && getExitedBookings().length > 0" class="glass-card mb-4">
+    <h5 class="mb-3"><i class="bi bi-exclamation-triangle me-2" style="color:var(--warning)"></i>Pending Payments</h5>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead><tr><th>Booking ID</th><th>Slot</th><th>Location</th><th>Vehicle</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let b of getExitedBookings()">
+            <td>#{{ b.bookingId }}</td>
+            <td>{{ b.slotNumber }}</td>
+            <td>{{ b.locationName }}</td>
+            <td>{{ b.vehicleNumber }}</td>
+            <td><span class="badge-status badge-exited">EXITED</span></td>
+            <td><button class="btn btn-success-gradient btn-sm" (click)="makePayment(b.bookingId)"><i class="bi bi-cash me-1"></i>Pay Now</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- All Payments Table (Admin) -->
+  <div *ngIf="!loading && authService.isAdmin()" class="glass-card">
+    <h5 class="mb-3"><i class="bi bi-list-check me-2" style="color:var(--primary)"></i>All Payments</h5>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead><tr><th>Payment ID</th><th>Booking ID</th><th>Amount</th><th>Status</th><th>Payment Time</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let p of allPayments">
+            <td>#{{ p.paymentId }}</td>
+            <td>#{{ p.bookingId }}</td>
+            <td style="color:var(--success-light); font-weight:600;">₹{{ p.amount }}</td>
+            <td><span class="badge-status badge-paid">{{ p.status }}</span></td>
+            <td>{{ p.paymentTime | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="allPayments.length === 0" class="text-center py-4" style="color:var(--text-muted);">No payments yet.</div>
+    </div>
+  </div>
+
+  <!-- Payment History (User) -->
+  <div *ngIf="!loading && !authService.isAdmin() && getPaidBookings().length > 0" class="glass-card">
+    <h5 class="mb-3"><i class="bi bi-clock-history me-2" style="color:var(--primary)"></i>Payment History</h5>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead><tr><th>Booking ID</th><th>Slot</th><th>Location</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let b of getPaidBookings()">
+            <td>#{{ b.bookingId }}</td>
+            <td>{{ b.slotNumber }}</td>
+            <td>{{ b.locationName }}</td>
+            <td><span class="badge-status badge-paid">PAID</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

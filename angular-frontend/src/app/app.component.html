@@ -1,0 +1,72 @@
+<!-- Auth pages: no sidebar/navbar -->
+<div *ngIf="isAuthPage()">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Main layout with sidebar -->
+<div *ngIf="!isAuthPage() && isLoggedIn()" class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="bi bi-car-front-fill"></i></div>
+      <div>
+        <h5>SmartParking</h5>
+        <small>Management System</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+      </a>
+
+      <!-- User & Admin -->
+      <a class="nav-link" routerLink="/booking" routerLinkActive="active">
+        <i class="bi bi-bookmark-check-fill"></i> Bookings
+      </a>
+
+      <!-- Admin Only -->
+      <ng-container *ngIf="isAdmin()">
+        <div class="nav-section-label">Administration</div>
+        <a class="nav-link" routerLink="/slots" routerLinkActive="active">
+          <i class="bi bi-layout-three-columns"></i> Slots & Locations
+        </a>
+        <a class="nav-link" routerLink="/towing" routerLinkActive="active">
+          <i class="bi bi-truck"></i> Towing
+        </a>
+        <a class="nav-link" routerLink="/reports" routerLinkActive="active">
+          <i class="bi bi-bar-chart-line-fill"></i> Reports
+        </a>
+      </ng-container>
+
+      <div class="nav-section-label">Billing</div>
+      <a class="nav-link" routerLink="/payments" routerLinkActive="active">
+        <i class="bi bi-credit-card-2-front-fill"></i> Payments
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content area -->
+  <div class="main-content">
+    <header class="top-navbar">
+      <span class="page-title">Smart Parking Management</span>
+      <div class="user-info">
+        <span class="badge-status badge-entered" *ngIf="getUser()">
+          {{ getUser()!.role }}
+        </span>
+        <span style="color:var(--text-secondary); font-size:14px;" *ngIf="getUser()">
+          {{ getUser()!.name }}
+        </span>
+        <div class="user-avatar">{{ getUserInitial() }}</div>
+        <button class="btn-glass btn-sm" (click)="logout()" style="padding:6px 14px; font-size:13px;">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="content-area fade-in-up">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

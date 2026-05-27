@@ -1,0 +1,53 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <i class="bi bi-car-front-fill"></i>
+    </div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to Smart Parking Management System</p>
+
+    <div *ngIf="errorMsg" class="alert-glass alert-danger mb-3">
+      <i class="bi bi-exclamation-circle"></i> {{ errorMsg }}
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <div class="input-group">
+          <span class="input-group-text" style="background:var(--bg-tertiary); border:1px solid var(--border-color); color:var(--text-muted);">
+            <i class="bi bi-envelope"></i>
+          </span>
+          <input type="email" class="form-control" [(ngModel)]="email" name="email"
+                 placeholder="Enter your email" required>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text" style="background:var(--bg-tertiary); border:1px solid var(--border-color); color:var(--text-muted);">
+            <i class="bi bi-lock"></i>
+          </span>
+          <input type="password" class="form-control" [(ngModel)]="password" name="password"
+                 placeholder="Enter your password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-gradient w-100 mb-3" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <p style="text-align:center; color:var(--text-secondary); font-size:14px;">
+      Don't have an account?
+      <a routerLink="/register" style="color:var(--primary-light); font-weight:600;">Create Account</a>
+    </p>
+
+    <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border-color); font-size:12px; color:var(--text-muted); text-align:center;">
+      <strong>Demo Credentials:</strong><br>
+      Admin: admin&#64;smartparking.com / admin123<br>
+      User: rahul&#64;example.com / password123
+    </div>
+  </div>
+</div>

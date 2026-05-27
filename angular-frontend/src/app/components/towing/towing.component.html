@@ -1,0 +1,77 @@
+<div class="fade-in-up">
+  <div class="page-header">
+    <h2><i class="bi bi-truck me-2" style="color:var(--danger)"></i>Towing Management</h2>
+    <button class="btn btn-danger-gradient" (click)="detectOverstayed()">
+      <i class="bi bi-search me-1"></i> Detect Overstayed Vehicles
+    </button>
+  </div>
+
+  <div *ngIf="successMsg" class="alert-glass alert-success mb-3"><i class="bi bi-check-circle"></i> {{ successMsg }}</div>
+  <div *ngIf="errorMsg" class="alert-glass alert-danger mb-3"><i class="bi bi-exclamation-circle"></i> {{ errorMsg }}</div>
+
+  <!-- Detected Overstayed -->
+  <div *ngIf="detectedBookings.length > 0" class="glass-card mb-4">
+    <h5 class="mb-3" style="color:var(--warning)"><i class="bi bi-exclamation-triangle me-2"></i>Overstayed Vehicles Detected</h5>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead><tr><th>Booking ID</th><th>User</th><th>Slot</th><th>Vehicle</th><th>Entry Time</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let b of detectedBookings">
+            <td>#{{ b.bookingId }}</td>
+            <td>{{ b.userName }}</td>
+            <td>{{ b.slotNumber }}</td>
+            <td>{{ b.vehicleNumber }}</td>
+            <td>{{ b.entryTime | date:'short' }}</td>
+            <td><span class="badge-status badge-towed">TOWED</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Towing Request Form -->
+  <div class="glass-card mb-4">
+    <h5 class="mb-3"><i class="bi bi-plus-circle me-2" style="color:var(--primary)"></i>Create Towing Request</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Booking ID</label>
+        <input type="number" class="form-control" [(ngModel)]="towingForm.bookingId" placeholder="Enter booking ID">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Towing Location</label>
+        <input type="text" class="form-control" [(ngModel)]="towingForm.towingLocation" placeholder="Where vehicle was towed">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Contact Info</label>
+        <input type="text" class="form-control" [(ngModel)]="towingForm.contactInfo" placeholder="Contact number">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Reason</label>
+        <input type="text" class="form-control" [(ngModel)]="towingForm.reason" placeholder="Reason for towing">
+      </div>
+    </div>
+    <button class="btn btn-gradient mt-3" (click)="createTowingRequest()"><i class="bi bi-check-lg me-1"></i> Submit</button>
+  </div>
+
+  <!-- Towing Requests Table -->
+  <div class="glass-card">
+    <h5 class="mb-3"><i class="bi bi-list-check me-2" style="color:var(--primary)"></i>Towing Requests</h5>
+    <div *ngIf="loading" class="spinner-container"><div class="custom-spinner"></div></div>
+    <div *ngIf="!loading" class="table-responsive">
+      <table class="table-dark-custom">
+        <thead><tr><th>ID</th><th>Booking ID</th><th>Towing Location</th><th>Contact</th><th>Reason</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let t of towingRequests">
+            <td>#{{ t.id }}</td>
+            <td>#{{ t.booking?.id }}</td>
+            <td>{{ t.towingLocation }}</td>
+            <td>{{ t.contactInfo }}</td>
+            <td>{{ t.reason }}</td>
+            <td>{{ t.towingDate | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="towingRequests.length === 0" class="text-center py-4" style="color:var(--text-muted);">No towing requests.</div>
+    </div>
+  </div>
+</div>

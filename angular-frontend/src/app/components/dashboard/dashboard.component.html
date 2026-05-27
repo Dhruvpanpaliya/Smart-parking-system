@@ -1,0 +1,162 @@
+<div class="fade-in-up">
+  <div class="page-header">
+    <h2><i class="bi bi-grid-1x2-fill me-2" style="color:var(--primary)"></i>Dashboard</h2>
+    <span class="badge-status badge-entered" style="font-size:14px;">Welcome, {{ user?.name }}</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="spinner-container"><div class="custom-spinner"></div></div>
+
+  <!-- ============ ADMIN DASHBOARD ============ -->
+  <ng-container *ngIf="!loading && authService.isAdmin()">
+    <div class="row g-4 mb-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card primary">
+          <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-value">{{ stats.totalUsers || 0 }}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card success">
+          <div class="stat-icon"><i class="bi bi-geo-alt-fill"></i></div>
+          <div class="stat-value">{{ stats.totalLocations || 0 }}</div>
+          <div class="stat-label">Parking Locations</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card info">
+          <div class="stat-icon"><i class="bi bi-columns-gap"></i></div>
+          <div class="stat-value">{{ stats.totalSlots || 0 }}</div>
+          <div class="stat-label">Total Slots</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-card warning">
+          <div class="stat-icon"><i class="bi bi-currency-rupee"></i></div>
+          <div class="stat-value">₹{{ stats.totalRevenue || 0 }}</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card success">
+          <div class="stat-value" style="font-size:24px;">{{ stats.availableSlots || 0 }}</div>
+          <div class="stat-label">Available</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card warning">
+          <div class="stat-value" style="font-size:24px;">{{ stats.bookedSlots || 0 }}</div>
+          <div class="stat-label">Booked</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card danger">
+          <div class="stat-value" style="font-size:24px;">{{ stats.occupiedSlots || 0 }}</div>
+          <div class="stat-label">Occupied</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card primary">
+          <div class="stat-value" style="font-size:24px;">{{ stats.totalBookings || 0 }}</div>
+          <div class="stat-label">Total Bookings</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card info">
+          <div class="stat-value" style="font-size:24px;">{{ stats.activeBookings || 0 }}</div>
+          <div class="stat-label">Active</div>
+        </div>
+      </div>
+      <div class="col-md-2 col-sm-4">
+        <div class="stat-card danger">
+          <div class="stat-value" style="font-size:24px;">{{ stats.towedVehicles || 0 }}</div>
+          <div class="stat-label">Towed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry / Exit for Admin too -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="glass-card">
+          <h5 class="mb-3"><i class="bi bi-box-arrow-in-right me-2" style="color:var(--success)"></i>Vehicle Entry</h5>
+          <div *ngIf="entryMsg" class="alert-glass alert-success mb-2"><i class="bi bi-check-circle"></i> {{ entryMsg }}</div>
+          <div *ngIf="entryError" class="alert-glass alert-danger mb-2"><i class="bi bi-exclamation-circle"></i> {{ entryError }}</div>
+          <div class="d-flex gap-2">
+            <input type="number" class="form-control" [(ngModel)]="entryBookingId" placeholder="Booking ID">
+            <button class="btn btn-success-gradient" (click)="processEntry()">Entry</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="glass-card">
+          <h5 class="mb-3"><i class="bi bi-box-arrow-right me-2" style="color:var(--warning)"></i>Vehicle Exit</h5>
+          <div *ngIf="exitMsg" class="alert-glass alert-success mb-2"><i class="bi bi-check-circle"></i> {{ exitMsg }}</div>
+          <div *ngIf="exitError" class="alert-glass alert-danger mb-2"><i class="bi bi-exclamation-circle"></i> {{ exitError }}</div>
+          <div class="d-flex gap-2">
+            <input type="number" class="form-control" [(ngModel)]="exitBookingId" placeholder="Booking ID">
+            <button class="btn btn-warning-gradient" (click)="processExit()">Exit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ============ USER DASHBOARD ============ -->
+  <ng-container *ngIf="!loading && !authService.isAdmin()">
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card primary">
+          <div class="stat-icon"><i class="bi bi-bookmark-check-fill"></i></div>
+          <div class="stat-value">{{ recentBookings.length }}</div>
+          <div class="stat-label">My Bookings</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card success">
+          <div class="stat-icon"><i class="bi bi-car-front-fill"></i></div>
+          <div class="stat-value">{{ user?.vehicleNumber }}</div>
+          <div class="stat-label">My Vehicle</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <a routerLink="/booking" style="text-decoration:none;">
+          <div class="stat-card warning">
+            <div class="stat-icon"><i class="bi bi-plus-circle-fill"></i></div>
+            <div class="stat-value" style="font-size:20px;">Book Now</div>
+            <div class="stat-label">Find & book a parking slot</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Recent Bookings Table -->
+  <div class="glass-card" *ngIf="!loading && recentBookings.length > 0">
+    <h5 class="mb-3"><i class="bi bi-clock-history me-2" style="color:var(--primary)"></i>Recent Bookings</h5>
+    <div class="table-responsive">
+      <table class="table-dark-custom">
+        <thead>
+          <tr>
+            <th>ID</th><th>Slot</th><th>Location</th><th>Vehicle</th><th>Type</th><th>Status</th><th>Booking Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of recentBookings">
+            <td>#{{ b.bookingId }}</td>
+            <td>{{ b.slotNumber }}</td>
+            <td>{{ b.locationName }}</td>
+            <td>{{ b.vehicleNumber }}</td>
+            <td>{{ b.vehicleType }}</td>
+            <td><span [class]="getStatusBadge(b.status)">{{ b.status }}</span></td>
+            <td>{{ b.bookingTime | date:'short' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
